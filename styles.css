@@ -399,6 +399,7 @@ h2 {
     right: 0;
     bottom: 0;
     padding: 2.5rem;
+    pointer-events: none;
 }
 
 /* Revealed card */
@@ -410,6 +411,7 @@ h2 {
 .card.revealed .card-back {
     opacity: 1;
     transform: scale(1) rotateY(0deg);
+    pointer-events: auto;
 }
 
 @keyframes card-pop {

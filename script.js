@@ -112,10 +112,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Card Reveal on Tap ---
     const hiddenCards = document.querySelectorAll('.hidden-card');
 
+    function revealCard(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        // Find the closest .hidden-card parent in case a child was tapped
+        const card = e.currentTarget;
+        card.classList.add('revealed');
+    }
+
     hiddenCards.forEach(card => {
-        card.addEventListener('click', () => {
-            card.classList.add('revealed');
-        });
+        card.addEventListener('click', revealCard);
+        card.addEventListener('touchend', revealCard);
     });
 
     function revealAllCards() {

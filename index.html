@@ -142,7 +142,126 @@
 
 
 
-    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Floating Hearts Animation ---
+            const heartsContainer = document.getElementById('hearts-container');
+            const heartSymbols = ['💗', '💖', '💝', '💕', '💓'];
+
+            function createHeart() {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerText = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                heart.style.animationDuration = (Math.random() * 5 + 10) + 's';
+                heartsContainer.appendChild(heart);
+                setTimeout(() => { heart.remove(); }, 15000);
+            }
+            setInterval(createHeart, 800);
+
+
+            // --- Hamburger Menu ---
+            const hamburger = document.querySelector('.hamburger');
+            const navLinks = document.querySelector('.nav-links');
+            const links = document.querySelectorAll('.nav-links li a');
+
+            hamburger.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+                hamburger.classList.toggle('active');
+            });
+
+            links.forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('active');
+                    hamburger.classList.remove('active');
+                });
+            });
+
+
+            // --- Intersection Observer for Fade-in ---
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+
+            // --- Scroll to Top ---
+            const scrollTopBtn = document.getElementById('scroll-top');
+
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    scrollTopBtn.classList.add('visible');
+                } else {
+                    scrollTopBtn.classList.remove('visible');
+                }
+            });
+
+            scrollTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+
+            // --- Card Reveal on Tap ---
+            const hiddenCards = document.querySelectorAll('.hidden-card');
+
+            function revealCard(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const card = e.currentTarget;
+                card.classList.add('revealed');
+            }
+
+            hiddenCards.forEach(card => {
+                card.addEventListener('click', revealCard);
+                card.addEventListener('touchend', revealCard);
+            });
+
+            function revealAllCards() {
+                hiddenCards.forEach(card => card.classList.add('revealed'));
+            }
+
+
+            // --- Shake Detection (mobile) ---
+            let lastX = 0, lastY = 0, lastZ = 0;
+            const shakeThreshold = 25;
+
+            function handleMotion(event) {
+                const acc = event.accelerationIncludingGravity || {};
+                if (acc.x == null) return;
+                const dX = Math.abs(acc.x - lastX);
+                const dY = Math.abs(acc.y - lastY);
+                const dZ = Math.abs(acc.z - lastZ);
+                if ((dX > shakeThreshold && dY > shakeThreshold) ||
+                    (dX > shakeThreshold && dZ > shakeThreshold) ||
+                    (dY > shakeThreshold && dZ > shakeThreshold)) {
+                    revealAllCards();
+                }
+                lastX = acc.x; lastY = acc.y; lastZ = acc.z;
+            }
+
+            if (window.DeviceMotionEvent) {
+                if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                    document.body.addEventListener('click', function req() {
+                        DeviceMotionEvent.requestPermission().then(r => {
+                            if (r === 'granted') window.addEventListener('devicemotion', handleMotion);
+                        });
+                        document.body.removeEventListener('click', req);
+                    });
+                } else {
+                    window.addEventListener('devicemotion', handleMotion);
+                }
+            }
+
+        });
+    </script>
 </body>
 
 </html>
